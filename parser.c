@@ -221,6 +221,12 @@ void statement() {
     // make sure there is an end
     if(!equal(Token, endsym)) {
       // end expected
+      printf("Current Token: %s\n", Token);
+      get_next_token();
+      printf("Token after that: %s\n", Token);
+      get_next_token();
+      printf("Token after that: %s\n", Token);
+      
       error(28);
     }
 
@@ -278,6 +284,7 @@ void statement() {
   }
   // check for read
   else if(equal(Token, readsym)) {
+    printf("Found a read symbol.\n");
     // read in the <id> and STO it
     get_next_token();
 
@@ -311,9 +318,7 @@ void statement() {
     emit(SIO, 0, 2);
 
     // put that value into the offset given by the symbol pointed to by identifier
-    emit(STO, 0, Symbol_Table[index].address);
-
-    get_next_token();
+    emit(STO, 0, symbol_address(index));
 
   }
   // print <id> to the console
@@ -353,7 +358,6 @@ void statement() {
     // SIO 0 1 to output from the top of the stack to the screen
     emit(SIO, 0, 1);
 
-    get_next_token();
   }
 
 }
@@ -700,7 +704,7 @@ void error(int num) {
       printf("Constant or variable already declared.\n");
       break;
     case 28:
-      printf("Keyword End Expected\n");
+      printf("Keyword end expected\n");
       break;
     case 30:
       printf("Keyword \'then\' expected");
