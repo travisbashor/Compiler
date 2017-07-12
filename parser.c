@@ -179,18 +179,17 @@ void statement() {
   // check for assignment
   if(equal(Token, identsym)) {
 
+    // move to name
     get_next_token();
-    
+
+    // find by name in Symbol_Table
     int index = find(Token);
     if(index == 0) {
       // assignment of non-declared variable
       error(11);
     }
-    else if(symbol_type(index) != 2) {
-      // this ain't a variable we're talkin about here
-      error(12);
-    }
 
+    // move to becomes
     get_next_token();
 
     if(!equal(Token, becomesym)) {
@@ -198,19 +197,23 @@ void statement() {
       error(13);
     }
 
+    // move to the expression
     get_next_token();
 
+    // use expression to put a value on top of the stack
     expression();
 
-    // LOD whatever expression left on top of the stack into the <id>
+    // LOD whatever expression left on top of the stack by expression() into the <id>
     emit(STO, 0, symbol_address(index));
 
   }
   // check for begin/end
   else if(equal(Token, beginsym)) {
 
+    // move to <statement-list>
     get_next_token();
 
+    // evaluate the statement and push its result onto the stack
     statement();
 
     // look for more statements, delimited by semicolons
@@ -385,6 +388,7 @@ void condition() {
 }
 
 void expression() {
+
   int add_operation;
   if(equal(Token, plussym) || equal(Token, minussym)) {
 
@@ -395,21 +399,24 @@ void expression() {
       add_operation = minussym;
     }
 
+    // move to a term
     get_next_token();
 
+    // put the result of term() on top of the stack
     term();
 
     // negation
     if(add_operation == minussym) {
-      // TODO: make sure the variable is what's on top of the stack
       emit(OPR, 0, 1);
     }
 
   }
   else {
+    // put the result of term() on top of the stack
     term();
   }
   
+  // after term(), we're either at another +/-, or 
   while(equal(Token, plussym) || equal(Token, minussym)) {
 
     if(equal(Token, plussym)) {
@@ -419,15 +426,18 @@ void expression() {
       add_operation = minussym;
     }
 
+    // move to term
     get_next_token();
 
+    // put the result of term() on top of the stack
     term();
 
     if(add_operation == plussym) {
+      // stack[sp] += stack[sp+1]
       emit(OPR, 0, 2);
     }
     else {
-      printf("I think I'm supposed to be subtracting...\n");
+      // stack[sp] -= stack[sp+1]
       emit(OPR, 0, 3);
     }
   }
@@ -444,10 +454,12 @@ void term() {
   printf("As I'm entering term(), my symbol is %s\n", Token);
   
   int multi_operation;
+  // store the result of factor() on top of the stack
+  printf("Entering factor...\n");
   factor();
 
   while(equal(Token, multsym) || equal(Token, slashsym)) {
-
+    printf("Found a * or /...\n");
     // assign multi operation
     if(equal(Token, multsym)) {
       multi_operation = multsym;
@@ -477,6 +489,9 @@ void factor() {
 
   if(equal(Token, identsym)) {
 
+    // move to the variable name
+    get_next_token();
+    
     int index = find(Token);
     if(index == 0) {
       // undeclared identifier
