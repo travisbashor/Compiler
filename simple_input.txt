@@ -1,0 +1,2 @@
+const yum = 1, cow = 2, throw = 50;
+.
