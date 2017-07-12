@@ -1,0 +1,5 @@
+
+				pc	bp	sp	stack
+Initial values			0	1	0
+0	inc	0	4	1	1	4	0 0 0 0 
+1	sio	0	3	0	0	0	
