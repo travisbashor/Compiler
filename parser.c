@@ -56,7 +56,7 @@ void block() {
   // leave index 0 out of the program
   emit(7, 0, 1);
   emit(6, 0, 4);
-  
+
   // check for constant declarations
   if(equal(Token, constsym)) {
     constant_declaration();
