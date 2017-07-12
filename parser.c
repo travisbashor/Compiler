@@ -73,6 +73,7 @@ void constant_declaration() {
 
   do {
 
+    // move to ident
     get_next_token();
     
     // check for an identifier
@@ -81,8 +82,8 @@ void constant_declaration() {
       error(4);
     }
 
-    // create a placeholder instruction
-    Instruction temp;
+    // move to name
+    get_next_token();
 
     // copy the name
     char name[MAX_IDENTIFIER_LENGTH];
@@ -95,33 +96,34 @@ void constant_declaration() {
       error(27);
     }
 
-    // check for an equals sign
+    // move to equals
     get_next_token();
+
     if(!equal(Token, eqlsym)) {
       // equals must come after the identifier
       error(3);
     }
     
-    // check for a number
+    // move to number
     get_next_token();
+
     if(!equal(Token, numbersym)) {
       // a number must come after equals
       error(2);
     }
     
-    // prepare for entry into symbol table
-    get_next_token();
     int value = atoi(Token);
 
-    // keep the constant in the symbol table, apart from the assembly
+    // keep the constant in the symbol table, separate from the assembly
     enter(1, name, value, 0, 0);
 
+    // move to comma
     get_next_token();
 
   } while (equal(Token, commasym));
 
-  // check for a semicolon
   if(!equal(Token, semicolonsym)) {
+    // expected semicolon
     error(5);
   }
 
