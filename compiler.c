@@ -30,16 +30,13 @@ void compile(char* program) {
   char* parser_output = "assembly.txt";
   char* vm_output = "virtual_machine.txt";
 
-  printf("running LA...\n");
   run_lexical_analyzer(program, lex_output);
 
-  printf("running parser...\n");
   run_parser(parser_output);
 
   // program is syntactically correct
   success();
   
-  printf("running VM...\n");
   run_virtual_machine(vm_output);
 
 }

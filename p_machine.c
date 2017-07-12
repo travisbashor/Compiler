@@ -371,47 +371,48 @@ int base(int levels, int base) {
 
 // print the code loaded from the file
 void print_code(FILE* ofp, int code_length) {
-  fprintf(ofp, "Line\tOP\tL\tM\n");
+  // REMEMBER TO CHANG ALL THIS BACK TO fprintf(ofp, "formatted string");
+  printf("Line\tOP\tL\tM\n");
   int pc;
   Instruction ir;
 
   for(pc = 0; pc < code_length; pc++) {
     ir = code[pc];
     // print code index
-    fprintf(ofp, "%d\t", pc);
+    printf("%d\t", pc);
     // print three-letter op_code
     switch(ir.op_code) {
       case 1:
-        fprintf(ofp, "lit\t");
+        printf("lit\t");
       break;
       case 2:
-        fprintf(ofp, "opr\t");
+        printf("opr\t");
       break;
       case 3:
-        fprintf(ofp, "lod\t");
+        printf("lod\t");
       break;
       case 4:
-        fprintf(ofp, "sto\t");
+        printf("sto\t");
       break;
       case 5:
-        fprintf(ofp, "cal\t");
+        printf("cal\t");
       break;
       case 6:
-        fprintf(ofp, "inc\t");
+        printf("inc\t");
       break;
       case 7:
-        fprintf(ofp, "jmp\t");
+        printf("jmp\t");
       break;
       case 8:
-        fprintf(ofp, "jpc\t");
+        printf("jpc\t");
       break;
       case 9:
-        fprintf(ofp, "sio\t");
+        printf("sio\t");
       break;
       default:
-        fprintf(ofp, "error\t");
+        printf("error\t");
     }
     // print level and modifier
-    fprintf(ofp, "%d\t%d\n", ir.level, ir.modifier);
+    printf("%d\t%d\n", ir.level, ir.modifier);
   }
 }

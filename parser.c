@@ -36,9 +36,7 @@ void run_parser(char* output_file) {
 
 // <program> ::= <block>.
 void program() {
-  // make space for an activation record when the program starts
-  emit(INC, 0, 4);
-
+  
   get_next_token();
 
   block();
@@ -55,12 +53,21 @@ void program() {
 
 // <block> ::= <const-declaration> <var-declaration> <statement>
 void block() {
+  // leave index 0 out of the program
+  emit(7, 0, 1);
+
   // check for constant declarations
   if(equal(Token, constsym)) {
+
+    get_next_token();
+    
     constant_declaration();
   }
   // check for variable declarations
   if(equal(Token, varsym)) {
+
+    get_next_token();
+
     variable_declaration();
   }
   statement();
@@ -74,7 +81,6 @@ void constant_declaration() {
     Instruction temp;
 
     // check for an identifier
-    get_next_token();
     if(!equal(Token, identsym)) {
       // identifier must come after keyword const
       error(4);
@@ -132,8 +138,6 @@ void variable_declaration() {
     // create a placeholder instruction
     Instruction temp;
 
-    // check for an identifier
-    get_next_token();
     if(!equal(Token, identsym)) {
       // identifier must come after keyword var
       error(4);
@@ -221,12 +225,6 @@ void statement() {
     // make sure there is an end
     if(!equal(Token, endsym)) {
       // end expected
-      printf("Current Token: %s\n", Token);
-      get_next_token();
-      printf("Token after that: %s\n", Token);
-      get_next_token();
-      printf("Token after that: %s\n", Token);
-      
       error(28);
     }
 
@@ -404,6 +402,7 @@ void expression() {
 
     // negation
     if(add_operation == minussym) {
+      // TODO: make sure the variable is what's on top of the stack
       emit(OPR, 0, 1);
     }
 
@@ -429,6 +428,7 @@ void expression() {
       emit(OPR, 0, 2);
     }
     else {
+      printf("I think I'm supposed to be subtracting...\n");
       emit(OPR, 0, 3);
     }
   }
@@ -442,6 +442,8 @@ void relative_operator() {
 
 // check for a properly defined term
 void term() {
+  printf("As I'm entering term(), my symbol is %s\n", Token);
+  
   int multi_operation;
   factor();
 
@@ -464,6 +466,7 @@ void term() {
     emit(OPR, 0, 4);
   }
   else {
+    printf("I think I'm supposed to be dividing...\n");
     emit(OPR, 0, 5);
   }
 }
@@ -471,9 +474,34 @@ void term() {
 // check for a proper factor
 void factor() {
   if(equal(Token, identsym)) {
+
     get_next_token();
 
 
+
+  }
+  else if(equal(Token, numbersym)) {
+
+    get_next_token();
+    
+  }
+  else if(equal(Token, lparentsym)) {
+
+    get_next_token();
+
+    expression();
+
+    if(!equal(Token, rparentsym)) {
+      // missing right parenthesis
+      error(22);
+    }
+
+    get_next_token();
+
+  }
+  else {
+    // expected id, number, or expression
+    error(34);
   }
 }
 
@@ -507,11 +535,8 @@ void print_assembly(char* output_file) {
     fprintf(stderr, "Can't open input file.\n");
   }
   
-  // print some sample assembly
-  create_sample_assembly();
-
   // print the code
-  // print_code(ofp, Code_Index);
+  print_code(ofp, Code_Index);
 }
 
 // helper function for checking symbols in the symbol table
@@ -721,6 +746,9 @@ void error(int num) {
       break;
     case 33:
       printf("Identifier expected.\n");
+      break;
+    case 34:
+      printf("Expected id, factor, or expression.\n");
       break;
     default:
       printf("Unknown error");
