@@ -65,29 +65,33 @@ void block() {
   }
   // check for variable declarations
   if(equal(Token, varsym)) {
-
+    printf("var symbol is: %s\n", Token);
     get_next_token();
-
+    printf("Now the token is: %s\n", Token);
     variable_declaration();
   }
+  
   statement();
 }
 
 // <const-declaration> ::= const <ident> := <number> {, <ident> := <number>};
 void constant_declaration() {
+    
+  // check for an identifier
+  if(!equal(Token, identsym)) {
+    // identifier must come after keyword const
+    error(4);
+  }
+
+
   do {
 
+    get_next_token();
+    
     // create a placeholder instruction
     Instruction temp;
 
-    // check for an identifier
-    if(!equal(Token, identsym)) {
-      // identifier must come after keyword const
-      error(4);
-    }
-
     // copy the name
-    get_next_token();
     char name[MAX_IDENTIFIER_LENGTH];
     strcpy(name, Token);
 
@@ -133,17 +137,18 @@ void constant_declaration() {
 
 // declare a variable
 void variable_declaration() {
+
+  if(!equal(Token, identsym)) {
+    // identifier must come after keyword var
+    error(4);
+  }
+  
   do {
+    printf("Should be name: %s\n", Token);
+    get_next_token();
 
     // create a placeholder instruction
     Instruction temp;
-
-    if(!equal(Token, identsym)) {
-      // identifier must come after keyword var
-      error(4);
-    }
-    
-    get_next_token();
 
     // copy the name
     char name[MAX_IDENTIFIER_LENGTH];
@@ -156,8 +161,6 @@ void variable_declaration() {
       error(27);
     }
     
-    get_next_token();
-
     // if no errors, put this symbol in the symbol table
     enter(2, name, 0, 0, Locals_Index);
     Locals_Index++;
@@ -169,6 +172,9 @@ void variable_declaration() {
 
   // check for a semicolon
   if(!equal(Token, semicolonsym)) {
+    printf("current token: %s\n", Token);
+    get_next_token();
+    printf("next token: %s\n", Token);
     error(5);
   }
 
