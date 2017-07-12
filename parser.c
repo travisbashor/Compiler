@@ -231,7 +231,19 @@ void statement() {
   }
   // check for while/do
   else if(equal(Token, whilesym)) {
-    // do stuff
+
+    get_next_token();
+    
+    condition();
+
+    if(!equal(Token, dosym)) {
+      // while must be followed by do
+      error(18);
+    }
+
+    get_next_token();
+
+    statement();
   }
   // check for read
   else if(equal(Token, readsym)) {
@@ -251,7 +263,76 @@ void statement() {
 
 // check a conditional
 void condition() {
-  // useful code here
+  if(equal(Token, oddsym)) {
+
+    get_next_token();
+
+    expression();
+  }
+  else {
+
+    expression();
+    
+    // check for relational operator
+    if(!equal(Token, eqlsym) && !equal(Token,neqsym),
+    && !equal(Token, lessym) && !equal(Token, leqsym),
+    && !equal(Token, gtrsym) && !equal(Token, geqsym)) {
+      // relational operator expected
+      error(20);
+    }
+
+    get_next_token();
+
+    expression();
+  }
+}
+
+void expression() {
+  int add_operation;
+  if(equal(Token, plussym) || equal(Token, minussym)) {
+
+    if(equal(Token, plussym)) {
+      add_operation = plussym;
+    }
+    else {
+      add_operation = minussym;
+    }
+
+    get_next_token();
+
+    term();
+
+    // negation
+    if(add_operation == minussym) {
+      emit(OPR, 0, 1);
+    }
+
+  }
+  else {
+    term();
+  }
+  
+  while(equal(Token, plussym) || equal(Token, minussym)) {
+
+    if(equal(Token, plussym)) {
+      add_operation = plussym;
+    }
+    else {
+      add_operation = minussym;
+    }
+
+    get_next_token();
+
+    term();
+
+    if(add_operation == plussym) {
+      emit(OPR, 0, 2);
+    }
+    else {
+      emit(OPR, 0, 3);
+    }
+  }
+  
 }
 
 // identify the operator
