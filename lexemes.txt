@@ -17,7 +17,7 @@ b            2
 answer       2
 :=           20
 a            2
--            5
+/            7
 b            2
 ;            18
 write        31
@@ -27,7 +27,7 @@ end          22
 .            19
 
 Symbolic Lexeme List:
-varsym identsym a commasym identsym b commasym identsym answer semicolonsym beginsym readsym identsym a semicolonsym readsym identsym b semicolonsym identsym answer becomesym identsym a minussym identsym b semicolonsym writesym identsym answer semicolonsym endsym periodsym 
+varsym identsym a commasym identsym b commasym identsym answer semicolonsym beginsym readsym identsym a semicolonsym readsym identsym b semicolonsym identsym answer becomesym identsym a slashsym identsym b semicolonsym writesym identsym answer semicolonsym endsym periodsym 
 
 Lexeme List:
-29 2 a 17 2 b 17 2 answer 18 21 32 2 a 18 32 2 b 18 2 answer 20 2 a 5 2 b 18 31 2 answer 18 22 19 
+29 2 a 17 2 b 17 2 answer 18 21 32 2 a 18 32 2 b 18 2 answer 20 2 a 7 2 b 18 31 2 answer 18 22 19 
