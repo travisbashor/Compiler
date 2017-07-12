@@ -284,7 +284,6 @@ void statement() {
   }
   // check for read
   else if(equal(Token, readsym)) {
-    printf("Found a read symbol.\n");
     // read in the <id> and STO it
     get_next_token();
 
@@ -508,8 +507,11 @@ void print_assembly(char* output_file) {
     fprintf(stderr, "Can't open input file.\n");
   }
   
+  // print some sample assembly
+  create_sample_assembly();
+
   // print the code
-  print_code(ofp, Code_Index);
+  // print_code(ofp, Code_Index);
 }
 
 // helper function for checking symbols in the symbol table
@@ -543,6 +545,8 @@ bool equal(char* token, int numerical_mapping) {
 
 // create sample assembly code output file for testing purposes
 void create_sample_assembly() {
+  
+  Code_Index = 0;
 
   // create a sample output file for the VM to use as input
   int sample_assembly[] = {
