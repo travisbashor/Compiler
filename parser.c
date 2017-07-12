@@ -261,15 +261,81 @@ void statement() {
   // check for read
   else if(equal(Token, readsym)) {
     // read in the <id> and STO it
+    get_next_token();
+
+    if(!equal(Token, identsym)) {
+      // identifier expected
+      error(33);
+    }
+
+    get_next_token();
+
+    // find the token by its name in the symbol table
+    int index = find(Token);
+    if(index == 0) {
+      // trying to assign a variable that was never declared
+      error(11);
+    }
+    else if(symbol_type(index) != 2) {
+      // trying to assign to something that isn't a variable
+      error(32);
+    }
+
+    get_next_token();
+
+    // check for a semicolon
+    if(!equal(Token, semicolonsym)) {
+      // expected semicolon
+      error(5);
+    }
+
+    // pull input from stdin and push it onto the stack
+    emit(SIO, 0, 2);
+
+    // put that value into the offset given by the symbol pointed to by identifier
+    emit(STO, 0, Symbol_Table[index].address);
+
+    get_next_token();
+
   }
   // print <id> to the console
   else if(equal(Token, writesym)) {
 
     get_next_token();
 
+    if(!equal(Token, identsym)) {
+      // identifier expected
+      error(33);
+    }
+
+    get_next_token();
+
+    // find the token by its name in the symbol table
+    int index = find(Token);
+    if(index == 0) {
+      // trying to write a variable that was never declared
+      error(11);
+    }
+    else if(symbol_type(index) != 2) {
+      // trying to write something that isn't a variable
+      error(32);
+    }
+
+    get_next_token();
+
+    // check for a semicolon
+    if(!equal(Token, semicolonsym)) {
+      // expected semicolon
+      error(5);
+    }    
+
     // LOD the symbol associated with <id>
-    
-    // SIO 0 1
+    emit(LOD, 0, Symbol_Table[index].address);
+
+    // SIO 0 1 to output from the top of the stack to the screen
+    emit(SIO, 0, 1);
+
+    get_next_token();
   }
 
 }
@@ -383,7 +449,11 @@ void term() {
 
 // check for a proper factor
 void factor() {
-  // useful code here
+  if(equal(Token, identsym)) {
+    get_next_token();
+
+
+  }
 }
 
 // make sure a number is composed of digits
@@ -619,6 +689,12 @@ void error(int num) {
       break;
     case 31:
       printf(":= missing in statement\n");
+      break;
+    case 32:
+      printf("Identifier is not a variable.\n");
+      break;
+    case 33:
+      printf("Identifier expected.\n");
       break;
     default:
       printf("Unknown error");

@@ -27,6 +27,11 @@ int symbol_address(int index) {
   return Symbol_Table[index].address;
 }
 
+// return the type of this symbol
+int symbol_type(int index) {
+  return Symbol_Table[index].kind;
+}
+
 // return the address of this name in the symbol table, or 0 if not found
 int find(char* name) {
 
