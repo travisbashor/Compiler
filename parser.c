@@ -58,16 +58,10 @@ void block() {
 
   // check for constant declarations
   if(equal(Token, constsym)) {
-
-    get_next_token();
-    
     constant_declaration();
   }
   // check for variable declarations
   if(equal(Token, varsym)) {
-    printf("var symbol is: %s\n", Token);
-    get_next_token();
-    printf("Now the token is: %s\n", Token);
     variable_declaration();
   }
   
@@ -76,18 +70,17 @@ void block() {
 
 // <const-declaration> ::= const <ident> := <number> {, <ident> := <number>};
 void constant_declaration() {
-    
-  // check for an identifier
-  if(!equal(Token, identsym)) {
-    // identifier must come after keyword const
-    error(4);
-  }
-
 
   do {
 
     get_next_token();
     
+    // check for an identifier
+    if(!equal(Token, identsym)) {
+      // identifier must come after keyword const
+      error(4);
+    }
+
     // create a placeholder instruction
     Instruction temp;
 
@@ -137,30 +130,30 @@ void constant_declaration() {
 
 // declare a variable
 void variable_declaration() {
-
-  if(!equal(Token, identsym)) {
-    // identifier must come after keyword var
-    error(4);
-  }
-  
   do {
-    printf("Should be name: %s\n", Token);
+
+    // move to ident
     get_next_token();
 
-    // create a placeholder instruction
-    Instruction temp;
+    // check for ident
+    if(!equal(Token, identsym)) {
+      error(4);
+    }
 
-    // copy the name
+    // move to name
+    get_next_token();
+    
     char name[MAX_IDENTIFIER_LENGTH];
     strcpy(name, Token);
 
-    // check if this name is already in the symbol table
     int symbol_index = find(name);
     if(symbol_index != 0) {
       // variable already declared
       error(27);
     }
     
+    get_next_token();
+
     // if no errors, put this symbol in the symbol table
     enter(2, name, 0, 0, Locals_Index);
     Locals_Index++;
@@ -172,9 +165,6 @@ void variable_declaration() {
 
   // check for a semicolon
   if(!equal(Token, semicolonsym)) {
-    printf("current token: %s\n", Token);
-    get_next_token();
-    printf("next token: %s\n", Token);
     error(5);
   }
 
