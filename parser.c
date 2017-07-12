@@ -365,12 +365,18 @@ void statement() {
 void condition() {
   if(equal(Token, oddsym)) {
 
+    // move to the expression
     get_next_token();
 
+    // put the result of expression on top of the stack
     expression();
+
+    emit(OPR, 0, 6);
+    
   }
   else {
 
+    // evaluate the left side
     expression();
     
     // check for relational operator
@@ -380,10 +386,34 @@ void condition() {
       // relational operator expected
       error(20);
     }
+    char* comparator = Token;
 
+    // move to the next operand
     get_next_token();
 
+    // evaluate the right side
     expression();
+
+    // emit correct assembly
+    if(equal(comparator, eqlsym)) {
+      emit(OPR, 0, 8);
+    }
+    else if(equal(comparator, neqsym)) {
+      emit(OPR, 0, 9);
+    }
+    else if(equal(comparator, lessym)) {
+      emit(OPR, 0, 10);
+    }
+    else if(equal(comparator, leqsym)) {
+      emit(OPR, 0, 11);
+    }
+    else if(equal(comparator, gtrsym)) {
+      emit(OPR, 0, 12);
+    }
+    else if(equal(comparator, geqsym)) {
+      emit(OPR, 0, 13);
+    }
+    
   }
 }
 
