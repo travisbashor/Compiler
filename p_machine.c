@@ -137,7 +137,7 @@ void run_virtual_machine(char *output_file) {
         switch(ir.modifier) {
           // output the value at the top of the stack to the screen
           case 1:
-            printf("The value at the top of the stack is:\n%d\n", stack[sp]);
+            printf("%d\n", stack[sp]);
           break;
 
           // read input from user and store it on top of the stack

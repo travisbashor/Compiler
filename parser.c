@@ -111,6 +111,9 @@ void constant_declaration() {
       // a number must come after equals
       error(2);
     }
+
+    // move to the actual value
+    get_next_token();
     
     int value = atoi(Token);
 
@@ -386,7 +389,9 @@ void condition() {
       // relational operator expected
       error(20);
     }
-    char* comparator = Token;
+    
+    char* comparator;
+    strcpy(comparator, Token);
 
     // move to the next operand
     get_next_token();
@@ -740,6 +745,9 @@ void error(int num) {
       break;
     case 5:
       printf("Semicolon or comma missing.\n");
+      printf("Current token: %s", Token);
+      get_next_token();
+      printf("Next token: %s", Token);
       break;
     case 6:
       printf("Incorrect symbol after procedure declaration.\n");
