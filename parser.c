@@ -178,12 +178,30 @@ void statement() {
 
     get_next_token();
     
-    if(!equal(Token, becomesym)) {
-      // := missing
-      error(2000);
+    int index = find(Token);
+    if(index == 0) {
+      // assignment of non-declared variable
+      error(11);
+    }
+    else if(symbol_type(index) != 2) {
+      // this ain't a variable we're talkin about here
+      error(12);
     }
 
+    get_next_token();
+
+    if(!equal(Token, becomesym)) {
+      // := missing
+      error(13);
+    }
+
+    get_next_token();
+
     expression();
+
+    // LOD whatever expression left on top of the stack into the <id>
+    emit(STO, 0, symbol_address(index));
+
   }
   // check for begin/end
   else if(equal(Token, beginsym)) {
