@@ -491,12 +491,22 @@ void factor() {
 
     // move to the variable name
     get_next_token();
-    
+
     int index = find(Token);
     if(index == 0) {
       // undeclared identifier
       error(11);
     }
+
+    // if it's a variable, LOD it
+    if(symbol_type(index) == 2) {
+      emit(LOD, symbol_level(index), symbol_address(index));
+    }
+    // if it's a constant, LIT it
+    else if (symbol_type(index) == 1) {
+      emit(LIT, 0, symbol_value(index));
+    }
+
     // If it's in the symbol table, load it up
     else {
       int kind = Symbol_Table[index].kind;

@@ -46,6 +46,7 @@ int find(char*);
 int symbol_level(int);
 int symbol_address(int);
 int symbol_type(int);
+int symbol_value(int);
 
 
 // internal representation of symbols
