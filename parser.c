@@ -142,9 +142,10 @@ void variable_declaration() {
       // identifier must come after keyword var
       error(4);
     }
+    
+    get_next_token();
 
     // copy the name
-    get_next_token();
     char name[MAX_IDENTIFIER_LENGTH];
     strcpy(name, Token);
 
@@ -473,17 +474,50 @@ void term() {
 
 // check for a proper factor
 void factor() {
+
+  int num;
+
   if(equal(Token, identsym)) {
 
+    int index = find(Token);
+    if(index == 0) {
+      // undeclared identifier
+      error(11);
+    }
+    // If it's in the symbol table, load it up
+    else {
+      int kind = Symbol_Table[index].kind;
+      int address = Symbol_Table[index].address;
+      int value = Symbol_Table[index].val;
+
+      if(kind == 1) {
+        // push to stack with constant parameters
+        emit(LIT, 0, value);
+      }
+      else if(kind == 2) {
+        // push to stack with variable parameters
+        emit(LOD, 0, address);
+      }
+    }
+
     get_next_token();
-
-
-
+    
   }
   else if(equal(Token, numbersym)) {
 
     get_next_token();
+
+    if(strlen(Token) > 5) {
+      // number too large
+      error(25);
+    }
     
+    num = atoi(Token);
+    
+    emit(LIT, 0, num);
+
+    get_next_token();
+
   }
   else if(equal(Token, lparentsym)) {
 
@@ -495,8 +529,6 @@ void factor() {
       // missing right parenthesis
       error(22);
     }
-
-    get_next_token();
 
   }
   else {
