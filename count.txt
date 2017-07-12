@@ -17,7 +17,7 @@ The output from running this should be along the lines of the following:
 
 */
 
-const increment = 1, stopValue = 10;
+const increment = 1, stopValue = 3;
 var counter;
 begin
 	/* Initialize [counter] to zero */

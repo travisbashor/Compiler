@@ -46,26 +46,14 @@ void condition();
 // evaluate an expression
 void expression();
 
-// identify the operator
-void relative_operator();
-
 // check for a properly defined term
 void term();
 
 // check for a proper factor
 void factor();
 
-// make sure a number is composed of digits
-void number();
-
 // check for proper naming convention
 void identifier();
-
-// check for a digit to be in the list of digit terminals
-void digit();
-
-// check for a character to be in the list of terminals
-void letter();
 
 // display an error message indicated by the number
 void error(int);

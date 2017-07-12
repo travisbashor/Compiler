@@ -382,6 +382,7 @@ void condition() {
     // put the result of expression on top of the stack
     expression();
 
+    // OPR, 0, ODD
     emit(OPR, 0, 6);
     
   }
@@ -487,11 +488,6 @@ void expression() {
   
 }
 
-// identify the operator
-void relative_operator() {
-  // useful code here
-}
-
 // check for a properly defined term
 void term() {
   
@@ -591,26 +587,6 @@ void factor() {
 
   // move to +-, */, or ;
     get_next_token();
-}
-
-// make sure a number is composed of digits
-void number() {
-  // useful code here
-}
-
-// check for proper naming convention
-void identifier() {
-  // useful code here
-}
-
-// check for a digit to be in the list of digit terminals
-void digit() {
-  // useful code here
-}
-
-// check for a character to be in the list of terminals
-void letter() {
-  // useful code here
 }
 
 // print the assembly code
