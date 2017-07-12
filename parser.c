@@ -175,11 +175,18 @@ void statement() {
 
   // check for assignment
   if(equal(Token, identsym)) {
-    // do stuff
+
+    get_next_token();
+    
+    if(!equal(Token, becomesym)) {
+      // := missing
+      error(2000);
+    }
+
+    expression();
   }
-  
   // check for begin/end
-  if(equal(Token, beginsym)) {
+  else if(equal(Token, beginsym)) {
 
     get_next_token();
 
@@ -203,9 +210,8 @@ void statement() {
     get_next_token();
 
   }
-
   // check for if/then
-  if(equal(Token, ifsym)) {
+  else if(equal(Token, ifsym)) {
     
     get_next_token();
 
@@ -223,19 +229,16 @@ void statement() {
     // evaluate the statement inside then
     statement();
   }
-
   // check for while/do
-  if(equal(Token, whilesym)) {
+  else if(equal(Token, whilesym)) {
     // do stuff
   }
-
   // check for read
-  if(equal(Token, readsym)) {
-    // do stuff
+  else if(equal(Token, readsym)) {
+    // read in the <id> and STO it
   }
-
   // print <id> to the console
-  if(equal(Token, writesym)) {
+  else if(equal(Token, writesym)) {
 
     get_next_token();
 
@@ -496,6 +499,9 @@ void error(int num) {
       break;
     case 30:
       printf("Keyword \'then\' expected");
+      break;
+    case 31:
+      printf(":= missing in statement\n");
       break;
     default:
       printf("Unknown error");
