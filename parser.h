@@ -43,6 +43,9 @@ void statement();
 // check a conditional
 void condition();
 
+// evaluate an expression
+void expression();
+
 // identify the operator
 void relative_operator();
 

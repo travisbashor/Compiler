@@ -226,15 +226,26 @@ void statement() {
     
     get_next_token();
 
+    int temp_index = Code_Index;
+    emit(JPC, 0, 0);
+
     // evaluate the statement inside then
     statement();
+
+    // get to the bottom of the statement and tell the code to jump here
+    code[temp_index].modifier = Code_Index;
   }
   // check for while/do
   else if(equal(Token, whilesym)) {
+    int temp_1 = Code_Index;
 
     get_next_token();
     
     condition();
+
+    int temp_2 = Code_Index;
+
+    emit(JPC, 0, 0);
 
     if(!equal(Token, dosym)) {
       // while must be followed by do
@@ -244,6 +255,8 @@ void statement() {
     get_next_token();
 
     statement();
+    emit(JMP, 0, temp_1);
+    code[temp_2].modifier = Code_Index;
   }
   // check for read
   else if(equal(Token, readsym)) {
@@ -274,8 +287,8 @@ void condition() {
     expression();
     
     // check for relational operator
-    if(!equal(Token, eqlsym) && !equal(Token,neqsym),
-    && !equal(Token, lessym) && !equal(Token, leqsym),
+    if(!equal(Token, eqlsym) && !equal(Token,neqsym)
+    && !equal(Token, lessym) && !equal(Token, leqsym)
     && !equal(Token, gtrsym) && !equal(Token, geqsym)) {
       // relational operator expected
       error(20);
@@ -342,7 +355,30 @@ void relative_operator() {
 
 // check for a properly defined term
 void term() {
-  // useful code here
+  int multi_operation;
+  factor();
+
+  while(equal(Token, multsym) || equal(Token, slashsym)) {
+
+    // assign multi operation
+    if(equal(Token, multsym)) {
+      multi_operation = multsym;
+    }
+    else {
+      multi_operation = slashsym;
+    }
+  }
+
+  get_next_token();
+
+  factor();
+
+  if(multi_operation == multsym) {
+    emit(OPR, 0, 4);
+  }
+  else {
+    emit(OPR, 0, 5);
+  }
 }
 
 // check for a proper factor
