@@ -451,15 +451,12 @@ void relative_operator() {
 
 // check for a properly defined term
 void term() {
-  printf("As I'm entering term(), my symbol is %s\n", Token);
   
   int multi_operation;
   // store the result of factor() on top of the stack
-  printf("Entering factor...\n");
   factor();
 
   while(equal(Token, multsym) || equal(Token, slashsym)) {
-    printf("Found a * or /...\n");
     // assign multi operation
     if(equal(Token, multsym)) {
       multi_operation = multsym;
@@ -467,19 +464,25 @@ void term() {
     else {
       multi_operation = slashsym;
     }
+
+    // move to another factor or the end of the line
+    get_next_token();
+
+    // store the output of factor() to the top of the stack
+    factor();
+
+    // coming out of factor, we're at the end of the line or at another factor
+    if(multi_operation == multsym) {
+      // multiply
+      emit(OPR, 0, 4);
+    }
+    else {
+      // divide
+      emit(OPR, 0, 5);
+    }
+
   }
 
-  get_next_token();
-
-  factor();
-
-  if(multi_operation == multsym) {
-    emit(OPR, 0, 4);
-  }
-  else {
-    printf("I think I'm supposed to be dividing...\n");
-    emit(OPR, 0, 5);
-  }
 }
 
 // check for a proper factor
@@ -507,27 +510,10 @@ void factor() {
       emit(LIT, 0, symbol_value(index));
     }
 
-    // If it's in the symbol table, load it up
-    else {
-      int kind = Symbol_Table[index].kind;
-      int address = Symbol_Table[index].address;
-      int value = Symbol_Table[index].val;
-
-      if(kind == 1) {
-        // push to stack with constant parameters
-        emit(LIT, 0, value);
-      }
-      else if(kind == 2) {
-        // push to stack with variable parameters
-        emit(LOD, 0, address);
-      }
-    }
-
-    get_next_token();
-    
   }
   else if(equal(Token, numbersym)) {
 
+    // move to name
     get_next_token();
 
     if(strlen(Token) > 5) {
@@ -535,19 +521,20 @@ void factor() {
       error(25);
     }
     
+    // push the literal num to the stack
     num = atoi(Token);
-    
     emit(LIT, 0, num);
-
-    get_next_token();
 
   }
   else if(equal(Token, lparentsym)) {
 
+    // move to the expression
     get_next_token();
 
+    // evaluate the expression
     expression();
 
+    // coming out of expression, we are at ")"
     if(!equal(Token, rparentsym)) {
       // missing right parenthesis
       error(22);
@@ -558,6 +545,9 @@ void factor() {
     // expected id, number, or expression
     error(34);
   }
+
+  // move to +-, */, or ;
+    get_next_token();
 }
 
 // make sure a number is composed of digits
