@@ -266,10 +266,12 @@ void statement() {
   else if(equal(Token, whilesym)) {
     int temp_1 = Code_Index;
 
+    // move to condition
     get_next_token();
     
     condition();
 
+    // condition will leave a 1 or 0 on top of the stack, which we'll check with jump
     int temp_2 = Code_Index;
 
     emit(JPC, 0, 0);
@@ -278,11 +280,16 @@ void statement() {
       // while must be followed by do
       error(18);
     }
+    else {
+      // move to statement
+      get_next_token();
+    }
 
-    get_next_token();
-
+    // put the result of statement on the top of the stack
     statement();
+
     emit(JMP, 0, temp_1);
+
     code[temp_2].modifier = Code_Index;
   }
   // check for read
@@ -390,7 +397,7 @@ void condition() {
       error(20);
     }
     
-    char* comparator;
+    char comparator[50];
     strcpy(comparator, Token);
 
     // move to the next operand
