@@ -1,0 +1,6 @@
+var y;
+begin
+  y := 5;
+  if y < 4
+    y := 6;
+end.

@@ -44,7 +44,7 @@ void program() {
   // check for a period at the end
   if(!equal(Token, periodsym)) {
     // period expected
-    error(9);
+    error(14);
   }
 
   // after the period, halt the program
@@ -192,6 +192,10 @@ void statement() {
     if(index == 0) {
       // assignment of non-declared variable
       error(4);
+    }
+    else if(symbol_type(index) != 2) {
+      // trying to write to a non-variable type
+      error(10);
     }
 
     // move to becomes
@@ -556,11 +560,6 @@ void factor() {
     // move to name
     get_next_token();
 
-    if(strlen(Token) > 5) {
-      // number too large
-      error(12);
-    }
-    
     // push the literal num to the stack
     num = atoi(Token);
     emit(LIT, 0, num);
@@ -577,13 +576,13 @@ void factor() {
     // coming out of expression, we are at ")"
     if(!equal(Token, rparentsym)) {
       // missing right parenthesis
-      error(13);
+      error(12);
     }
 
   }
   else {
     // expected id, number, or expression
-    error(14);
+    error(13);
   }
 
   // move to +-, */, or ;
@@ -744,22 +743,20 @@ void error(int num) {
       printf("Identifier expected.\n");
       break;
     case 10:
-      printf("Attempting to write to an undeclared variable.\n");
+      printf("Attempting to write to a non-variable type.\n");
       break;
     case 11:
       printf("Relational operator expected.\n");
       break;
     case 12:
-      printf("Number is too large.\n");
-      break;
-    case 13:
       printf("Missing right parenthesis.\n");
       break;
-    case 14:
+    case 13:
       printf("Expected id, factor, or expression.\n");
       break;
-    default:
-      printf("Unknown error.\n");
+    case 14:
+      printf("Period expected\n");
+      break;
   }
   printf("Parsing terminated.\n");
   exit(0);

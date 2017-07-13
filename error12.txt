@@ -1,0 +1,4 @@
+var input;
+begin
+  input := (3 + 4;
+end

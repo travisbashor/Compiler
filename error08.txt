@@ -1,0 +1,6 @@
+var key;
+begin
+  key := 15;
+  while key < 20
+    key := key + 1;
+end

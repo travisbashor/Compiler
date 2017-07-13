@@ -1,0 +1,3 @@
+var y;
+begin
+  y := 1 + 1;

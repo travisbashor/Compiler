@@ -1,0 +1,5 @@
+const z = 55;
+var x, y;
+begin
+  z := 90;
+end.
