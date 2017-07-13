@@ -158,6 +158,7 @@ void variable_declaration() {
       error(27);
     }
     
+    // move to a comma
     get_next_token();
 
     // if no errors, put this symbol in the symbol table

@@ -42,7 +42,7 @@ void compile(char* program) {
 }
 
 void success() {
-  printf("Program is syntactically correct.\n");
+  printf("\nProgram is syntactically correct.\n\n");
 }
 
 void assign_flags(int num_flags, char** flags) {
