@@ -80,7 +80,7 @@ void constant_declaration() {
     // check for an identifier
     if(!equal(Token, identsym)) {
       // identifier must come after keyword const
-      error(4);
+      error(2);
     }
 
     // move to name
@@ -94,7 +94,7 @@ void constant_declaration() {
     int symbol_index = find(name);
     if(symbol_index != 0) {
       // constant already declared
-      error(27);
+      error(3);
     }
 
     // move to equals
@@ -128,7 +128,7 @@ void constant_declaration() {
 
   if(!equal(Token, semicolonsym)) {
     // expected semicolon
-    error(5);
+    error(1);
   }
 
   get_next_token();
@@ -143,7 +143,7 @@ void variable_declaration() {
 
     // check for ident
     if(!equal(Token, identsym)) {
-      error(4);
+      error(2);
     }
 
     // move to name
@@ -155,7 +155,7 @@ void variable_declaration() {
     int symbol_index = find(name);
     if(symbol_index != 0) {
       // variable already declared
-      error(27);
+      error(3);
     }
     
     // move to a comma
@@ -172,7 +172,7 @@ void variable_declaration() {
 
   // check for a semicolon
   if(!equal(Token, semicolonsym)) {
-    error(5);
+    error(1);
   }
 
   get_next_token();
@@ -191,7 +191,7 @@ void statement() {
     int index = find(Token);
     if(index == 0) {
       // assignment of non-declared variable
-      error(11);
+      error(4);
     }
 
     // move to becomes
@@ -199,7 +199,7 @@ void statement() {
 
     if(!equal(Token, becomesym)) {
       // := missing
-      error(13);
+      error(5);
     }
 
     // move to the expression
@@ -232,7 +232,7 @@ void statement() {
     // make sure there is an end
     if(!equal(Token, endsym)) {
       // end expected
-      error(28);
+      error(6);
     }
 
     // if there is an end, consume the token and proceed
@@ -250,7 +250,7 @@ void statement() {
     // make sure if is followed by then
     if(!equal(Token, thensym)) {
       // then expected
-      error(30);
+      error(7);
     }
     
     get_next_token();
@@ -280,7 +280,7 @@ void statement() {
 
     if(!equal(Token, dosym)) {
       // while must be followed by do
-      error(18);
+      error(8);
     }
     else {
       // move to statement
@@ -301,7 +301,7 @@ void statement() {
 
     if(!equal(Token, identsym)) {
       // identifier expected
-      error(33);
+      error(9);
     }
 
     get_next_token();
@@ -310,11 +310,11 @@ void statement() {
     int index = find(Token);
     if(index == 0) {
       // trying to assign a variable that was never declared
-      error(11);
+      error(4);
     }
     else if(symbol_type(index) != 2) {
       // trying to assign to something that isn't a variable
-      error(32);
+      error(10);
     }
 
     get_next_token();
@@ -322,7 +322,7 @@ void statement() {
     // check for a semicolon
     if(!equal(Token, semicolonsym)) {
       // expected semicolon
-      error(5);
+      error(1);
     }
 
     // pull input from stdin and push it onto the stack
@@ -339,7 +339,7 @@ void statement() {
 
     if(!equal(Token, identsym)) {
       // identifier expected
-      error(33);
+      error(9);
     }
 
     get_next_token();
@@ -348,11 +348,11 @@ void statement() {
     int index = find(Token);
     if(index == 0) {
       // trying to write a variable that was never declared
-      error(11);
+      error(4);
     }
     else if(symbol_type(index) != 2) {
       // trying to write something that isn't a variable
-      error(32);
+      error(10);
     }
 
     get_next_token();
@@ -360,7 +360,7 @@ void statement() {
     // check for a semicolon
     if(!equal(Token, semicolonsym)) {
       // expected semicolon
-      error(5);
+      error(1);
     }    
 
     // LOD the symbol associated with <id>
@@ -397,7 +397,7 @@ void condition() {
     && !equal(Token, lessym) && !equal(Token, leqsym)
     && !equal(Token, gtrsym) && !equal(Token, geqsym)) {
       // relational operator expected
-      error(20);
+      error(11);
     }
     
     char comparator[50];
@@ -538,7 +538,7 @@ void factor() {
     int index = find(Token);
     if(index == 0) {
       // undeclared identifier
-      error(11);
+      error(4);
     }
 
     // if it's a variable, LOD it
@@ -558,7 +558,7 @@ void factor() {
 
     if(strlen(Token) > 5) {
       // number too large
-      error(25);
+      error(12);
     }
     
     // push the literal num to the stack
@@ -577,13 +577,13 @@ void factor() {
     // coming out of expression, we are at ")"
     if(!equal(Token, rparentsym)) {
       // missing right parenthesis
-      error(22);
+      error(13);
     }
 
   }
   else {
     // expected id, number, or expression
-    error(34);
+    error(14);
   }
 
   // move to +-, */, or ;
@@ -714,113 +714,54 @@ void enter(int kind, char *name, int val, int level, int address) {
 
 // display an error message
 void error(int num) {
-  printf("Error %d: ", num);
+  printf("\nError %d: ", num);
   switch(num) {
     case 1:
-      printf("Used = instead of :=.\n");
+      printf("Expected semicolon.\n");
       break;
     case 2:
-      printf("= must be followed by a number.\n");
+      printf("An identifier must follow const, var, or procedure.\n");
       break;
     case 3:
-      printf("Identifier must be followed by a =.\n");
-      break;
-    case 4:
-      printf("const, var, or procedure must be followed by an identifier.\n");
-      break;
-    case 5:
-      printf("Semicolon or comma missing.\n");
-      printf("Current token: %s", Token);
-      get_next_token();
-      printf("Next token: %s", Token);
-      break;
-    case 6:
-      printf("Incorrect symbol after procedure declaration.\n");
-      break;
-    case 7:
-      printf("Statement expected.\n");
-      break;
-    case 8:
-      printf("Incorrect symbol after statement part in block.\n");
-      break;
-    case 9:
-      printf("Period expected.\n");
-      break;
-    case 10:
-      printf("Semicolon between statements missing.\n");
-      break;
-    case 11:
-      printf("Undeclared identifier.\n");
-      break;
-    case 12:
-      printf("Assignment to constant or procedure is not allowed.\n");
-      break;
-    case 13:
-      printf("Assignment operator expected.\n");
-      break;
-    case 14:
-      printf("call must be followed by an identifier.\n");
-      break;
-    case 15:
-      printf("Call of a constant or variable is meaningless.\n");
-      break;
-    case 16:
-      printf("then expected.\n");
-      break;
-    case 17:
-      printf("Semicolon or } expected.\n");
-      break;
-    case 18:
-      printf("do expected.\n");
-      break;
-    case 19:
-      printf("Incorrect symbol following statement.\n");
-      break;
-    case 20:
-      printf("Relational operator expected.\n");
-      break;
-    case 21:
-      printf("Expression must not contain a procedure identifier.\n");
-      break;
-    case 22:
-      printf("Right parenthesis missing.\n");
-      break;
-    case 23:
-      printf("The preceding factor cannot begin with this symbol.\n");
-      break;
-    case 24:
-      printf("An expression cannot begin with this symbol.\n");
-      break;
-    case 25:
-      printf("The number is too large.\n");
-      break;
-    case 26:
-      printf("Too much code.\n");
-      break;
-    case 27:
       printf("Constant or variable already declared.\n");
       break;
-    case 28:
-      printf("Keyword end expected\n");
+    case 4:
+      printf("Undeclared identifier.\n");
       break;
-    case 30:
-      printf("Keyword \'then\' expected");
+    case 5:
+      printf("Assignment operator expected.\n");
       break;
-    case 31:
-      printf(":= missing in statement\n");
+    case 6:
+      printf("Keyword 'end' expected.\n");
       break;
-    case 32:
-      printf("Identifier is not a variable.\n");
+    case 7:
+      printf("Keyword 'then' expected.\n");
       break;
-    case 33:
+    case 8:
+      printf("Keyword 'while' must be followed by keyword 'do'.\n");
+      break;
+    case 9:
       printf("Identifier expected.\n");
       break;
-    case 34:
+    case 10:
+      printf("Attempting to write to an undeclared variable.\n");
+      break;
+    case 11:
+      printf("Relational operator expected.\n");
+      break;
+    case 12:
+      printf("Number is too large.\n");
+      break;
+    case 13:
+      printf("Missing right parenthesis.\n");
+      break;
+    case 14:
       printf("Expected id, factor, or expression.\n");
       break;
     default:
-      printf("Unknown error");
+      printf("Unknown error.\n");
   }
+  printf("Parsing terminated.\n");
   exit(0);
 }
 
