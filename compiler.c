@@ -79,4 +79,3 @@ void flag_error(int num) {
       printf("Wrong flags. Only -l, -a, and -v are allowed.\n");
   }
 }
-
