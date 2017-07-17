@@ -1,6 +1,7 @@
 {
   "files.associations": {
     "*.inc": "php",
-    "internals.h": "c"
+    "internals.h": "c",
+    "stdlib.h": "c"
   }
 }

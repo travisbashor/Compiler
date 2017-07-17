@@ -1,0 +1,5 @@
+var favenum;
+begin
+  read favenum;
+  write favenum;
+end.

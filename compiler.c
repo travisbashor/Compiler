@@ -8,6 +8,8 @@ int Show_Lexemes = 0;
 int Show_Assembly = 0;
 int Show_Execution = 0;
 
+// every time you call block(), create 4 slots for control variables
+
 int main(int argc, char** argv) {
   
   // handle flags
