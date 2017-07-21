@@ -23,10 +23,10 @@ Instruction code[MAX_CODE_LENGTH];
 
 void run_parser(char* output_file) {
 
-  // load the lexeme list into a useable array of strings
+  // break up the lexeme list into an array of strings
   load_lexeme_list();
 
-  // run the parsing program
+  // parse the program
   program();
    
   if(Show_Assembly == 1) {
@@ -38,6 +38,9 @@ void run_parser(char* output_file) {
 void program() {
   
   get_next_token();
+
+  // leave index 0 out of the program
+  emit(7, 0, 1);
 
   block();
 
@@ -51,11 +54,10 @@ void program() {
   emit(SIO, 0, 3);
 }
 
-// <block> ::= <const-declaration> <var-declaration> <statement>
+// <block> ::= <const-declaration> <var-declaration> <proc-declaration> <statement>
 void block() {
-  // leave index 0 out of the program
-  emit(7, 0, 1);
-  emit(6, 0, 4);
+  // create 4 spaces at the start for control variables
+  emit(INC, 0, 4);
 
   // check for constant declarations
   if(equal(Token, constsym)) {
@@ -65,7 +67,11 @@ void block() {
   if(equal(Token, varsym)) {
     variable_declaration();
   }
-  
+  // check for procedure declarations
+  if(equal(Token, procsym)) {
+    procedure_declaration();
+  }
+
   statement();
 }
 
@@ -176,6 +182,56 @@ void variable_declaration() {
   }
 
   get_next_token();
+}
+
+void procedure_declaration() {
+
+  // move to ident
+  get_next_token();
+
+  // make sure it is ident
+  if(!equal(Token, identsym)) {
+    error(2);
+  }
+
+  // **store index of block in symbol table**
+
+  // move to the name
+  get_next_token();
+
+  // copy the name
+  char name[MAX_IDENTIFIER_LENGTH];
+  strcpy(name, Token);
+
+  // make sure this name isn't already in the symbol table
+  int symbol_index = find(name);
+  if(symbol_index != 0) {
+    // name already in use
+    error(3);
+  }
+
+  // move to semicolon
+  get_next_token();
+
+  // make sure it is a semicolon
+  if(!equal(Token, semicolonsym)) {
+    error(1);
+  }
+
+  // move into the block
+  get_next_token();
+
+  // parse the block
+  block();
+
+  // check for a semicolon
+  if(!equal(Token, semicolonsym)) {
+    error(1);
+  }
+
+  // move to the rest of the code **ASSUMING WE'RE AT A SEMICOLON AFTER BLOCK()**
+  get_next_token();
+
 }
 
 // make a statement
@@ -339,6 +395,7 @@ void statement() {
   // print <id> to the console
   else if(equal(Token, writesym)) {
 
+    // move to identifier
     get_next_token();
 
     if(!equal(Token, identsym)) {
@@ -346,6 +403,7 @@ void statement() {
       error(9);
     }
 
+    // move to name
     get_next_token();
 
     // find the token by its name in the symbol table
@@ -359,6 +417,7 @@ void statement() {
       error(10);
     }
 
+    // move to semicolon
     get_next_token();
 
     // check for a semicolon
@@ -722,7 +781,7 @@ void error(int num) {
       printf("An identifier must follow const, var, or procedure.\n");
       break;
     case 3:
-      printf("Constant or variable already declared.\n");
+      printf("Constant, variable, or procedure already declared.\n");
       break;
     case 4:
       printf("Undeclared identifier.\n");

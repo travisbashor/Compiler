@@ -34,15 +34,15 @@ char IRMapping[34][64] = {
 	"endsym",
 	"ifsym",
 	"thensym",
+	"elsesym",
 	"whilesym",
 	"dosym",
 	"callsym",
 	"constsym",
 	"varsym",
-	"?",
+	"procsym",
 	"writesym",
-	"readsym",
-	"?"
+	"readsym"
 };
 
 // List of symbols allowed
@@ -50,13 +50,13 @@ char symbols[] = {'+', '-', '*', '/', '(', ')', '=', ',', '.', '<', '>', ';', ':
 char reserved[14][32] = {
 	"const",
 	"var",
-	"?",
+	"procedure",
 	"call",
 	"begin",
 	"end",
 	"if",
 	"then",
-	"?",
+	"else",
 	"while",
 	"do",
 	"read",
@@ -84,6 +84,8 @@ int mapReserved(int spotInReserved)
 		return constsym;
 	if (spotInReserved == 1)
 		return varsym;
+	if (spotInReserved == 2)
+		return procsym;
 	if (spotInReserved == 3)
 		return callsym;
 	if (spotInReserved == 4)
@@ -94,6 +96,8 @@ int mapReserved(int spotInReserved)
 		return ifsym;
 	if (spotInReserved == 7)
 		return thensym;
+	if (spotInReserved == 8) 
+		return elsesym;
 	if (spotInReserved == 9)
 		return whilesym;
 	if (spotInReserved == 10)

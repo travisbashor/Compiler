@@ -56,8 +56,8 @@ typedef enum {
   neqsym = 10, lessym = 11, leqsym = 12, gtrsym = 13, geqsym = 14,
   lparentsym = 15, rparentsym = 16, commasym = 17, semicolonsym = 18,
   periodsym = 19, becomesym = 20, beginsym = 21, endsym = 22, ifsym = 23,
-  thensym = 24, whilesym = 25, dosym = 26, callsym = 27, constsym = 28,
-  varsym = 29, writesym = 31, readsym = 32
+  thensym = 24, elsesym = 25, whilesym = 26, dosym = 27, callsym = 28, constsym = 29,
+  varsym = 30, procsym = 31, writesym = 32, readsym = 33
 } token_type;
 
 // values for printing, given at call time
