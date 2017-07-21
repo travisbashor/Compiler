@@ -37,6 +37,9 @@ void constant_declaration();
 // declare a variable
 void variable_declaration();
 
+// declare a procedure
+void procedure_declaration();
+
 // make a statement
 void statement();
 
