@@ -1,6 +1,6 @@
 // Travis Bashor
 // 7-7-17
-// Systems Software, Homework 2: Parser component
+// Systems Software, Homework 3: Parser with if-then-else and procedures
 
 // includes
 #include <string.h>
@@ -39,9 +39,10 @@ void program() {
   
   get_next_token();
 
-  // leave index 0 out of the program
-  emit(7, 0, 1);
+  // jump to main(), to be modified after procedures are declared
+  emit(JMP, 0, 1);
 
+  // parse the block of code
   block();
 
   // check for a period at the end
@@ -56,6 +57,7 @@ void program() {
 
 // <block> ::= <const-declaration> <var-declaration> <proc-declaration> <statement>
 void block() {
+  
   // create 4 spaces at the start for control variables
   emit(INC, 0, 4);
 
@@ -68,10 +70,13 @@ void block() {
     variable_declaration();
   }
   // check for procedure declarations
-  if(equal(Token, procsym)) {
+  while(equal(Token, procsym)) {
     procedure_declaration();
   }
 
+  // make sure the code index in the first jump points to main()
+  code[0].address = Code_Index + 1;
+  
   statement();
 }
 
@@ -184,6 +189,7 @@ void variable_declaration() {
   get_next_token();
 }
 
+// procedure-declaration ::= { "procedure" ident ";" block ";" }
 void procedure_declaration() {
 
   // move to ident
@@ -224,12 +230,18 @@ void procedure_declaration() {
   // parse the block
   block();
 
+  // if block() enforces a semi-colon at the end, then the grammar suggests 2 consecutive semicolons
+  // otherwise, the last semi-colon of block() can suffice
+
   // check for a semicolon
   if(!equal(Token, semicolonsym)) {
     error(1);
   }
 
-  // move to the rest of the code **ASSUMING WE'RE AT A SEMICOLON AFTER BLOCK()**
+  // store the procedure's kind, name, L, and M in the symbol table
+  enter(3, name, 0, 0, 0);
+  
+  // move to the rest of the code **ASSUMING WE'RE AT A SEMICOLON AFTER block()**
   get_next_token();
 
 }
