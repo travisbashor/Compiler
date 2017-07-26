@@ -18,6 +18,7 @@ int Symbol_Table_Index = 1;
 int Lexeme_List_Index = 0;
 int Code_Index = 0;
 int Locals_Index = 4;
+int lex_level = 0;
 Symbol Symbol_Table[MAX_SYMBOL_TABLE_SIZE];
 Instruction code[MAX_CODE_LENGTH];
 
@@ -200,8 +201,6 @@ void procedure_declaration() {
     error(2);
   }
 
-  // **store index of block in symbol table**
-
   // move to the name
   get_next_token();
 
@@ -224,24 +223,32 @@ void procedure_declaration() {
     error(1);
   }
 
+  // make sure we aren't nested too deep
+  if(lex_level >= MAX_LEXI_LEVEL) {
+    error(15)
+  }
+
+  // store the procedure's kind, name, val, level, and modifier in the symbol table
+  enter(3, name, 0, lex_level + 1, 0);
+  
   // move into the block
   get_next_token();
+
+  // increment the lexicographical level for this block
+  lex_level++;
 
   // parse the block
   block();
 
-  // if block() enforces a semi-colon at the end, then the grammar suggests 2 consecutive semicolons
-  // otherwise, the last semi-colon of block() can suffice
+  // decrement the level
+  lex_level--;
 
   // check for a semicolon
   if(!equal(Token, semicolonsym)) {
     error(1);
   }
-
-  // store the procedure's kind, name, L, and M in the symbol table
-  enter(3, name, 0, 0, 0);
   
-  // move to the rest of the code **ASSUMING WE'RE AT A SEMICOLON AFTER block()**
+  // move to the rest of the code
   get_next_token();
 
 }
@@ -282,6 +289,19 @@ void statement() {
 
     // LOD whatever expression left on top of the stack by expression() into the <id>
     emit(STO, 0, symbol_address(index));
+
+  }
+  // else if(equal(Token, callsym)) {
+
+  //   // move to ident
+  //   get_next_token();
+
+  //   // check for ident
+  //   if(!equal(Token, identsym)) {
+  //     error(9);
+  //   }
+
+
 
   }
   // check for begin/end
@@ -827,6 +847,9 @@ void error(int num) {
       break;
     case 14:
       printf("Period expected\n");
+      break;
+    case 15:
+      printf("Procedures nested too deep. Maximum of 3 lexicographical levels allowed.\n");
       break;
   }
   printf("Parsing terminated.\n");

@@ -32,6 +32,7 @@ extern char IRMapping[34][64];
 extern int Symbol_Table_Index;
 extern int Code_Index;
 extern int Locals_Index;
+extern int lex_level;
 extern Instruction code[MAX_CODE_LENGTH];
 extern Symbol Symbol_Table[MAX_SYMBOL_TABLE_SIZE];
 
