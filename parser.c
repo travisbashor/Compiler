@@ -228,8 +228,10 @@ void procedure_declaration() {
     error(15)
   }
 
+  // TODO: DEFINE PROC INDEX
+
   // store the procedure's kind, name, val, level, and modifier in the symbol table
-  enter(3, name, 0, lex_level + 1, 0);
+  enter(3, name, 0, lex_level + 1, proc_index);
   
   // move into the block
   get_next_token();
@@ -247,7 +249,10 @@ void procedure_declaration() {
   if(!equal(Token, semicolonsym)) {
     error(1);
   }
-  
+
+  // return from this procedure
+  emit(OPR, 0, 0);
+    
   // move to the rest of the code
   get_next_token();
 
@@ -291,17 +296,33 @@ void statement() {
     emit(STO, 0, symbol_address(index));
 
   }
-  // else if(equal(Token, callsym)) {
+  // check for procedure call
+  else if(equal(Token, callsym)) {
 
-  //   // move to ident
-  //   get_next_token();
+    // move to ident
+    get_next_token();
 
-  //   // check for ident
-  //   if(!equal(Token, identsym)) {
-  //     error(9);
-  //   }
+    // check for ident
+    if(!equal(Token, identsym)) {
+      error(9);
+    }
 
+    // move to name
+    get_next_token();
 
+    // find by name in Symbol_Table
+    int index = find(Token);
+    if(index == 0) {
+      // call of non-declared procedure
+      error(4);
+    }
+    else if(symbol_type(index) != 3) {
+      // trying to call a non-procedure type
+      error(10);
+    }
+
+    // call the procedure pointed to by id
+    emit(CAL, 0, symbol_address(index));
 
   }
   // check for begin/end
@@ -834,7 +855,7 @@ void error(int num) {
       printf("Identifier expected.\n");
       break;
     case 10:
-      printf("Attempting to write to a non-variable type.\n");
+      printf("Type misuse.\n");
       break;
     case 11:
       printf("Relational operator expected.\n");

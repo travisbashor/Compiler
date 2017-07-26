@@ -13,11 +13,9 @@
 // prototypes
 void perform_operation(int *pc, int *sp, int *bp, int mod); /* select operation, given a mod value */
 int base(int levels, int base);                             /* find the base of the caller of an AR*/
-// void print_code(FILE* ofp, int code_length);                /* print the assembly code pulled from the input file */
 void print_stack(FILE* ofp, int base, int top);             /* recursive function to print all ARs in the stack */
 
 // global variables
-// Instruction code[MAX_CODE_LENGTH];  /* used to hold the program */
 int stack[MAX_STACK_HEIGHT];        /* used to hold the activation records */
 
 void run_virtual_machine(char *output_file) {
