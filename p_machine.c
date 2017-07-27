@@ -148,6 +148,7 @@ void run_virtual_machine(char *output_file) {
 
           // halt the program
           case 3:
+            printf("\n");
             pc = 0;
             bp = 0;
             sp = 0;
