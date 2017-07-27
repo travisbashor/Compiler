@@ -57,6 +57,9 @@ void program() {
 // <block> ::= <const-declaration> <var-declaration> <proc-declaration> <statement>
 void block() {
   
+  // increment the lexicographical level
+  Lex_Level++;
+  
   // jump to main(), to be modified after procedures are declared
   int jump_index = Code_Index;
   emit(JMP, 0, 0);
@@ -85,6 +88,12 @@ void block() {
   
   // parse the statements
   statement();
+
+  // return from this block
+  emit(OPR, 0, 0);
+
+  // decrement the lexicographical level
+  Lex_Level--;
 }
 
 // <const-declaration> ::= const <ident> := <number> {, <ident> := <number>};
@@ -190,9 +199,6 @@ int variable_declaration() {
     enter(2, name, 0, Lex_Level, Locals_Index);
     Locals_Index++;
 
-    // in assembly, allocate space for the variable
-    // emit(INC, 0, 1);
-
   } while (equal(Token, commasym));
 
   // check for a semicolon
@@ -245,29 +251,22 @@ void procedure_declaration() {
   }
 
   // store the procedure's kind, name, val (ignored), level, and modifier in the symbol table
-  enter(3, name, 0, Lex_Level + 1, Code_Index);
+  enter(3, name, 0, Lex_Level, Code_Index);
   
   // move into the block
   get_next_token();
 
-  // increment the lexicographical level for this block
-  Lex_Level++;
+  // reset the locals index
   Locals_Index = 4;
 
   // parse the block
   block();
-
-  // decrement the level after the block
-  Lex_Level--;
 
   // check for a semicolon
   if(!equal(Token, semicolonsym)) {
     error(1);
   }
 
-  // return from this procedure
-  emit(OPR, 0, 0);
-    
   // move to the rest of the code
   get_next_token();
 
@@ -308,7 +307,7 @@ void statement() {
     expression();
 
     // STO whatever expression left on top of the stack by expression() into the <id>
-    emit(STO, 0, symbol_address(index));
+    emit(STO, Lex_Level - symbol_level(index), symbol_address(index));
 
   }
   // check for procedure call
@@ -337,7 +336,7 @@ void statement() {
     }
 
     // call the procedure pointed to by id
-    emit(CAL, 0, symbol_address(index));
+    emit(CAL, Lex_Level - symbol_level(index), symbol_address(index));
 
     // move to the semi-colon or end
     get_next_token();
@@ -465,7 +464,7 @@ void statement() {
     emit(SIO, 0, 2);
 
     // put that value into the offset given by the symbol pointed to by identifier
-    emit(STO, 0, symbol_address(index));
+    emit(STO, Lex_Level - symbol_level(index), symbol_address(index));
 
   }
   // print <id> to the console
@@ -682,7 +681,6 @@ void factor() {
 
     // if it's a variable, LOD it
     if(symbol_type(index) == 2) {
-      print_symbol(index);
       emit(LOD, Lex_Level - symbol_level(index), symbol_address(index));
     }
     // if it's a constant, LIT it
