@@ -18,7 +18,7 @@ int Symbol_Table_Index = 1;
 int Lexeme_List_Index = 0;
 int Code_Index = 0;
 int Locals_Index = 4;
-int lex_level = 0;
+int Lex_Level = 0;
 Symbol Symbol_Table[MAX_SYMBOL_TABLE_SIZE];
 Instruction code[MAX_CODE_LENGTH];
 
@@ -38,10 +38,8 @@ void run_parser(char* output_file) {
 // <program> ::= <block>.
 void program() {
   
+  // move into the block
   get_next_token();
-
-  // jump to main(), to be modified after procedures are declared
-  emit(JMP, 0, 1);
 
   // parse the block of code
   block();
@@ -59,25 +57,33 @@ void program() {
 // <block> ::= <const-declaration> <var-declaration> <proc-declaration> <statement>
 void block() {
   
-  // create 4 spaces at the start for control variables
-  emit(INC, 0, 4);
+  // jump to main(), to be modified after procedures are declared
+  int jump_index = Code_Index;
+  emit(JMP, 0, 0);
 
+  // size of the stack. 4 by default
+  int size = 4;
+  
   // check for constant declarations
   if(equal(Token, constsym)) {
     constant_declaration();
   }
   // check for variable declarations
   if(equal(Token, varsym)) {
-    variable_declaration();
+    size += variable_declaration();
   }
   // check for procedure declarations
   while(equal(Token, procsym)) {
     procedure_declaration();
   }
 
-  // make sure the code index in the first jump points to main()
-  code[0].address = Code_Index + 1;
+  // make sure the code index in the first jump points to the outer function
+  code[jump_index].modifier = Code_Index;
+
+  // create 4 spaces at the start for control variables, plus locals
+  emit(INC, 0, size);
   
+  // parse the statements
   statement();
 }
 
@@ -147,9 +153,16 @@ void constant_declaration() {
 }
 
 // declare a variable
-void variable_declaration() {
+int variable_declaration() {
+
+  // count the number of variables declared and return it to block()
+  int num_variables = 0;
+
   do {
 
+    // increase variable count
+    num_variables++;
+    
     // move to ident
     get_next_token();
 
@@ -178,7 +191,7 @@ void variable_declaration() {
     Locals_Index++;
 
     // in assembly, allocate space for the variable
-    emit(INC, 0, 1);
+    // emit(INC, 0, 1);
 
   } while (equal(Token, commasym));
 
@@ -187,7 +200,10 @@ void variable_declaration() {
     error(1);
   }
 
+  // move to whatever is beyond the semicolon
   get_next_token();
+
+  return num_variables;
 }
 
 // procedure-declaration ::= { "procedure" ident ";" block ";" }
@@ -224,26 +240,24 @@ void procedure_declaration() {
   }
 
   // make sure we aren't nested too deep
-  if(lex_level >= MAX_LEXI_LEVEL) {
-    error(15)
+  if(Lex_Level >= MAX_LEXI_LEVEL) {
+    error(15);
   }
 
-  // TODO: DEFINE PROC INDEX
-
-  // store the procedure's kind, name, val, level, and modifier in the symbol table
-  enter(3, name, 0, lex_level + 1, proc_index);
+  // store the procedure's kind, name, val (ignored), level, and modifier in the symbol table
+  enter(3, name, 0, Lex_Level + 1, Code_Index);
   
   // move into the block
   get_next_token();
 
   // increment the lexicographical level for this block
-  lex_level++;
+  Lex_Level++;
 
   // parse the block
   block();
 
-  // decrement the level
-  lex_level--;
+  // decrement the level after the block
+  Lex_Level--;
 
   // check for a semicolon
   if(!equal(Token, semicolonsym)) {
@@ -324,6 +338,9 @@ void statement() {
     // call the procedure pointed to by id
     emit(CAL, 0, symbol_address(index));
 
+    // move to the semi-colon or end
+    get_next_token();
+
   }
   // check for begin/end
   else if(equal(Token, beginsym)) {
@@ -384,11 +401,13 @@ void statement() {
     // move to condition
     get_next_token();
     
+    // parse the condition
     condition();
 
     // condition will leave a 1 or 0 on top of the stack, which we'll check with jump
     int temp_2 = Code_Index;
 
+    // emit jump code as a stand-in until we have the right address
     emit(JPC, 0, 0);
 
     if(!equal(Token, dosym)) {
@@ -409,7 +428,8 @@ void statement() {
   }
   // check for read
   else if(equal(Token, readsym)) {
-    // read in the <id> and STO it
+
+    // move to ident
     get_next_token();
 
     if(!equal(Token, identsym)) {
@@ -417,6 +437,7 @@ void statement() {
       error(9);
     }
 
+    // move to the name
     get_next_token();
 
     // find the token by its name in the symbol table
@@ -430,13 +451,14 @@ void statement() {
       error(10);
     }
 
+    // move to the semi-colon or next line
     get_next_token();
 
     // check for a semicolon
-    if(!equal(Token, semicolonsym)) {
+    // if(!equal(Token, semicolonsym)) {
       // expected semicolon
-      error(1);
-    }
+      // error(1);
+    // }
 
     // pull input from stdin and push it onto the stack
     emit(SIO, 0, 2);
@@ -470,19 +492,19 @@ void statement() {
       error(10);
     }
 
-    // move to semicolon
+    // move to semicolon or next line
     get_next_token();
 
     // check for a semicolon
-    if(!equal(Token, semicolonsym)) {
+    // if(!equal(Token, semicolonsym)) {
       // expected semicolon
-      error(1);
-    }    
+      // error(1);
+    // }    
 
     // LOD the symbol associated with <id>
     emit(LOD, 0, Symbol_Table[index].address);
 
-    // SIO 0 1 to output from the top of the stack to the screen
+    // output from the top of the stack to the screen
     emit(SIO, 0, 1);
 
   }

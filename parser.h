@@ -35,7 +35,7 @@ void block();
 void constant_declaration();
 
 // declare a variable
-void variable_declaration();
+int variable_declaration();
 
 // declare a procedure
 void procedure_declaration();

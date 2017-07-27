@@ -1,0 +1,67 @@
+Lexeme Table:
+lexeme       token type
+var          30
+f            2
+,            17
+n            2
+;            18
+procedure    31
+fact         2
+;            18
+var          30
+ans1         2
+;            18
+begin        21
+ans1         2
+:=           20
+n            2
+;            18
+n            2
+:=           20
+n            2
+-            5
+1            3
+;            18
+if           23
+n            2
+=            9
+0            3
+then         24
+f            2
+:=           20
+1            3
+;            18
+if           23
+n            2
+>            13
+0            3
+then         24
+call         28
+fact         2
+;            18
+f            2
+:=           20
+f            2
+*            6
+ans1         2
+;            18
+end          22
+;            18
+begin        21
+read         33
+n            2
+;            18
+call         28
+fact         2
+;            18
+write        32
+f            2
+;            18
+end          22
+.            19
+
+Symbolic Lexeme List:
+varsym identsym f commasym identsym n semicolonsym procsym identsym fact semicolonsym varsym identsym ans1 semicolonsym beginsym identsym ans1 becomesym identsym n semicolonsym identsym n becomesym identsym n minussym numbersym 1 semicolonsym ifsym identsym n eqlsym numbersym 0 thensym identsym f becomesym numbersym 1 semicolonsym ifsym identsym n gtrsym numbersym 0 thensym callsym identsym fact semicolonsym identsym f becomesym identsym f multsym identsym ans1 semicolonsym endsym semicolonsym beginsym readsym identsym n semicolonsym callsym identsym fact semicolonsym writesym identsym f semicolonsym endsym periodsym 
+
+Lexeme List:
+30 2 f 17 2 n 18 31 2 fact 18 30 2 ans1 18 21 2 ans1 20 2 n 18 2 n 20 2 n 5 3 1 18 23 2 n 9 3 0 24 2 f 20 3 1 18 23 2 n 13 3 0 24 28 2 fact 18 2 f 20 2 f 6 2 ans1 18 22 18 21 33 2 n 18 28 2 fact 18 32 2 f 18 22 19 

@@ -2,6 +2,7 @@
   "files.associations": {
     "*.inc": "php",
     "internals.h": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "parser.h": "c"
   }
 }
