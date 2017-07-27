@@ -372,9 +372,10 @@ void statement() {
   // check for if/then
   else if(equal(Token, ifsym)) {
     
+    // move to condition
     get_next_token();
 
-    // evalutate the condition
+    // parse the condition
     condition();
 
     // make sure if is followed by then
@@ -383,16 +384,33 @@ void statement() {
       error(7);
     }
     
+    // move to the statement
     get_next_token();
 
-    int temp_index = Code_Index;
+    // placeholders for modifying jump after the statement
+    int then_index = Code_Index;
     emit(JPC, 0, 0);
 
     // evaluate the statement inside then
     statement();
 
     // get to the bottom of the statement and tell the code to jump here
-    code[temp_index].modifier = Code_Index;
+    code[then_index].modifier = Code_Index;
+
+    if(equal(Token, elsesym)) {
+      // make a placeholder
+      int else_index = Code_Index;
+      emit(JMP, 0, 0);
+
+      // parse the else statement
+      get_next_token();
+      statement();
+
+      // reassign the modifier of else
+      code[else_index].modifier = Code_Index;
+    }
+
+
   }
   // check for while/do
   else if(equal(Token, whilesym)) {
