@@ -89,9 +89,6 @@ void block() {
   // parse the statements
   statement();
 
-  // return from this block
-  emit(OPR, 0, 0);
-
   // decrement the lexicographical level
   Lex_Level--;
 }
@@ -266,6 +263,9 @@ void procedure_declaration() {
   if(!equal(Token, semicolonsym)) {
     error(1);
   }
+
+  // return from this block
+  emit(OPR, 0, 0);
 
   // move to the rest of the code
   get_next_token();
