@@ -1,69 +1,44 @@
 Lexeme Table:
 lexeme       token type
-var          30
-result       2
+const        29
+one          2
+=            9
+1            3
 ,            17
-arg          2
+two          2
+=            9
+2            3
 ;            18
 procedure    31
-fac          2
+very         2
 ;            18
-var          30
-n            2
-;            18
-begin        21
-n            2
-:=           20
-arg          2
-;            18
-if           23
-n            2
-<=           12
-1            3
-then         24
-begin        21
-result       2
-:=           20
-1            3
-;            18
-end          22
-else         25
-begin        21
-arg          2
-:=           20
-n            2
--            5
-1            3
-;            18
-call         28
-fac          2
-;            18
-result       2
-:=           20
-n            2
-*            6
-result       2
-;            18
-end          22
-;            18
-end          22
+procedure    31
+scary        2
 ;            18
 begin        21
-arg          2
-:=           20
-6            3
-;            18
-call         28
-fac          2
-;            18
 write        32
-result       2
+two          2
+;            18
+end          22
+;            18
+begin        21
+write        32
+one          2
+;            18
+call         28
+scary        2
+;            18
+end          22
+;            18
+begin        21
+call         28
+very         2
 ;            18
 end          22
 .            19
 
 Symbolic Lexeme List:
-varsym identsym result commasym identsym arg semicolonsym procsym identsym fac semicolonsym varsym identsym n semicolonsym beginsym identsym n becomesym identsym arg semicolonsym ifsym identsym n leqsym numbersym 1 thensym beginsym identsym result becomesym numbersym 1 semicolonsym endsym elsesym beginsym identsym arg becomesym identsym n minussym numbersym 1 semicolonsym callsym identsym fac semicolonsym identsym result becomesym identsym n multsym identsym result semicolonsym endsym semicolonsym endsym semicolonsym beginsym identsym arg becomesym numbersym 6 semicolonsym callsym identsym fac semicolonsym writesym identsym result semicolonsym endsym periodsym 
+constsym identsym one eqlsym numbersym 1 commasym identsym two eqlsym numbersym 2 semicolonsym procsym identsym very semicolonsym procsym identsym scary semicolonsym beginsym writesym identsym two semicolonsym endsym semicolonsym beginsym writesym identsym one semicolonsym callsym identsym scary semicolonsym endsym semicolonsym beginsym callsym identsym very semicolonsym endsym periodsym 
 
 Lexeme List:
-30 2 result 17 2 arg 18 31 2 fac 18 30 2 n 18 21 2 n 20 2 arg 18 23 2 n 12 3 1 24 21 2 result 20 3 1 18 22 25 21 2 arg 20 2 n 5 3 1 18 28 2 fac 18 2 result 20 2 n 6 2 result 18 22 18 22 18 21 2 arg 20 3 6 18 28 2 fac 18 32 2 result 18 22 19 
+29 2 one 9 3 1 17 2 two 9 3 2 18 31 2 very 18 31 2 scary 18 21 32 2 two 18 22 18 21 32 2 one 18 28 2 scary 18 22 18 21 28 2 very 18 22 19 

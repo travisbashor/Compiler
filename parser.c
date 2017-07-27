@@ -475,12 +475,6 @@ void statement() {
     // move to the semi-colon or next line
     get_next_token();
 
-    // check for a semicolon
-    // if(!equal(Token, semicolonsym)) {
-      // expected semicolon
-      // error(1);
-    // }
-
     // pull input from stdin and push it onto the stack
     emit(SIO, 0, 2);
 
@@ -508,22 +502,22 @@ void statement() {
       // trying to write a variable that was never declared
       error(4);
     }
-    else if(symbol_type(index) != 2) {
-      // trying to write something that isn't a variable
+    else if(symbol_type(index) == 3) {
+      // trying to write a procedure
       error(10);
     }
 
     // move to semicolon or next line
     get_next_token();
 
-    // check for a semicolon
-    // if(!equal(Token, semicolonsym)) {
-      // expected semicolon
-      // error(1);
-    // }    
-
-    // LOD the symbol associated with <id>
-    emit(LOD, Lex_Level - symbol_level(index), symbol_address(index));
+    if(symbol_type(index) == 1) {
+      // LIT the constant onto the stack
+      emit(LIT, 0, symbol_value(index));
+    }
+    else {
+      // LOD the symbol associated with <id>
+      emit(LOD, Lex_Level - symbol_level(index), symbol_address(index));
+    }
 
     // output from the top of the stack to the screen
     emit(SIO, 0, 1);
@@ -898,7 +892,7 @@ void error(int num) {
       printf("Identifier expected.\n");
       break;
     case 10:
-      printf("Type misuse.\n");
+      printf("Type misuse on token: %s.\n", Token);
       break;
     case 11:
       printf("Relational operator expected.\n");
