@@ -187,7 +187,7 @@ int variable_declaration() {
     get_next_token();
 
     // if no errors, put this symbol in the symbol table
-    enter(2, name, 0, 0, Locals_Index);
+    enter(2, name, 0, Lex_Level, Locals_Index);
     Locals_Index++;
 
     // in assembly, allocate space for the variable
@@ -252,6 +252,7 @@ void procedure_declaration() {
 
   // increment the lexicographical level for this block
   Lex_Level++;
+  Locals_Index = 4;
 
   // parse the block
   block();
@@ -306,7 +307,7 @@ void statement() {
     // use expression to put a value on top of the stack
     expression();
 
-    // LOD whatever expression left on top of the stack by expression() into the <id>
+    // STO whatever expression left on top of the stack by expression() into the <id>
     emit(STO, 0, symbol_address(index));
 
   }
@@ -502,7 +503,7 @@ void statement() {
     // }    
 
     // LOD the symbol associated with <id>
-    emit(LOD, 0, Symbol_Table[index].address);
+    emit(LOD, Lex_Level - symbol_level(index), symbol_address(index));
 
     // output from the top of the stack to the screen
     emit(SIO, 0, 1);
@@ -681,7 +682,8 @@ void factor() {
 
     // if it's a variable, LOD it
     if(symbol_type(index) == 2) {
-      emit(LOD, symbol_level(index), symbol_address(index));
+      print_symbol(index);
+      emit(LOD, Lex_Level - symbol_level(index), symbol_address(index));
     }
     // if it's a constant, LIT it
     else if (symbol_type(index) == 1) {

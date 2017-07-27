@@ -82,6 +82,7 @@ void run_virtual_machine(char *output_file) {
         // load a value to the top of the stack from a location specified by level and modifier
         fprintf(ofp, "lod\t");
         sp++;
+        printf("On line %d: loading from %d\n", pc, base(ir.level, bp) + ir.modifier);
         stack[sp] = stack[base(ir.level, bp) + ir.modifier];
       break;
 
