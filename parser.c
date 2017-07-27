@@ -335,8 +335,14 @@ void statement() {
       error(10);
     }
 
+    int level_difference = Lex_Level - symbol_level(index);
+    if(level_difference < 0) {
+      // can't call something from a deeper level
+      error(16);
+    }
+
     // call the procedure pointed to by id
-    emit(CAL, Lex_Level - symbol_level(index), symbol_address(index));
+    emit(CAL, level_difference, symbol_address(index));
 
     // move to the semi-colon or end
     get_next_token();
@@ -909,6 +915,8 @@ void error(int num) {
     case 15:
       printf("Procedures nested too deep. Maximum of 3 lexicographical levels allowed.\n");
       break;
+    case 16:
+      printf("Attempt to call a procedure from a deeper level.\nYou went too deep, man. You went too deep...\n");
   }
   printf("Parsing terminated.\n");
   exit(0);
