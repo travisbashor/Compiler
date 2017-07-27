@@ -21,5 +21,5 @@ begin
         If you change "scary" to "very", then running it through
         your compiler should print a 1 and then a 2.
     */
-    call scary;
+    call very;
 end.

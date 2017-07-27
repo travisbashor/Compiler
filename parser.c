@@ -408,6 +408,9 @@ void statement() {
 
       // reassign the modifier of else
       code[else_index].modifier = Code_Index;
+
+      // make the failing if condition jump into the else body
+      code[then_index].modifier++;
     }
 
 
