@@ -67,4 +67,7 @@ void load_lexeme_list();
 // comparison helper
 bool equal(char*, int);
 
+// verify that a token is what it is supposed to be
+void verify(char*, int);
+
 #endif

@@ -45,10 +45,7 @@ void program() {
   block();
 
   // check for a period at the end
-  if(!equal(Token, periodsym)) {
-    // period expected
-    error(14);
-  }
+  verify(Token, periodsym);
 
   // after the period, halt the program
   emit(SIO, 0, 3);
@@ -102,10 +99,7 @@ void constant_declaration() {
     get_next_token();
     
     // check for an identifier
-    if(!equal(Token, identsym)) {
-      // identifier must come after keyword const
-      error(2);
-    }
+    verify(Token, identsym);
 
     // move to name
     get_next_token();
@@ -124,18 +118,12 @@ void constant_declaration() {
     // move to equals
     get_next_token();
 
-    if(!equal(Token, eqlsym)) {
-      // equals must come after the identifier
-      error(3);
-    }
+    verify(Token, eqlsym);
     
     // move to number
     get_next_token();
 
-    if(!equal(Token, numbersym)) {
-      // a number must come after equals
-      error(2);
-    }
+    verify(Token, numbersym);
 
     // move to the actual value
     get_next_token();
@@ -150,10 +138,7 @@ void constant_declaration() {
 
   } while (equal(Token, commasym));
 
-  if(!equal(Token, semicolonsym)) {
-    // expected semicolon
-    error(1);
-  }
+  verify(Token, semicolonsym);
 
   get_next_token();
 }
@@ -173,9 +158,7 @@ int variable_declaration() {
     get_next_token();
 
     // check for ident
-    if(!equal(Token, identsym)) {
-      error(2);
-    }
+    verify(Token, identsym);
 
     // move to name
     get_next_token();
@@ -199,9 +182,7 @@ int variable_declaration() {
   } while (equal(Token, commasym));
 
   // check for a semicolon
-  if(!equal(Token, semicolonsym)) {
-    error(1);
-  }
+  verify(Token, semicolonsym);
 
   // move to whatever is beyond the semicolon
   get_next_token();
@@ -216,9 +197,7 @@ void procedure_declaration() {
   get_next_token();
 
   // make sure it is ident
-  if(!equal(Token, identsym)) {
-    error(2);
-  }
+  verify(Token, identsym);
 
   // move to the name
   get_next_token();
@@ -237,10 +216,7 @@ void procedure_declaration() {
   // move to semicolon
   get_next_token();
 
-  // make sure it is a semicolon
-  if(!equal(Token, semicolonsym)) {
-    error(1);
-  }
+  verify(Token, semicolonsym);
 
   // make sure we aren't nested too deep
   if(Lex_Level >= MAX_LEXI_LEVEL) {
@@ -259,10 +235,8 @@ void procedure_declaration() {
   // parse the block
   block();
 
-  // check for a semicolon
-  if(!equal(Token, semicolonsym)) {
-    error(1);
-  }
+  // check for the semicolon
+  verify(Token, semicolonsym);
 
   // return from this block
   emit(OPR, 0, 0);
@@ -295,10 +269,8 @@ void statement() {
     // move to becomes
     get_next_token();
 
-    if(!equal(Token, becomesym)) {
-      // := missing
-      error(5);
-    }
+    // make sure it is becomes
+    verify(Token, becomesym);
 
     // move to the expression
     get_next_token();
@@ -317,9 +289,7 @@ void statement() {
     get_next_token();
 
     // check for ident
-    if(!equal(Token, identsym)) {
-      error(9);
-    }
+    verify(Token, identsym);
 
     // move to name
     get_next_token();
@@ -366,10 +336,7 @@ void statement() {
     }
 
     // make sure there is an end
-    if(!equal(Token, endsym)) {
-      // end expected
-      error(6);
-    }
+    verify(Token, endsym);
 
     // if there is an end, consume the token and proceed
     get_next_token();
@@ -385,10 +352,7 @@ void statement() {
     condition();
 
     // make sure if is followed by then
-    if(!equal(Token, thensym)) {
-      // then expected
-      error(7);
-    }
+    verify(Token, thensym);
     
     // move to the statement
     get_next_token();
@@ -437,14 +401,11 @@ void statement() {
     // emit jump code as a stand-in until we have the right address
     emit(JPC, 0, 0);
 
-    if(!equal(Token, dosym)) {
-      // while must be followed by do
-      error(8);
-    }
-    else {
-      // move to statement
-      get_next_token();
-    }
+    // check for do symbol
+    verify(Token, dosym);
+
+    // move to the statement
+    get_next_token();
 
     // put the result of statement on the top of the stack
     statement();
@@ -459,10 +420,8 @@ void statement() {
     // move to ident
     get_next_token();
 
-    if(!equal(Token, identsym)) {
-      // identifier expected
-      error(9);
-    }
+    // check for ident
+    verify(Token, identsym);
 
     // move to the name
     get_next_token();
@@ -494,10 +453,8 @@ void statement() {
     // move to identifier
     get_next_token();
 
-    if(!equal(Token, identsym)) {
-      // identifier expected
-      error(9);
-    }
+    // check for identifier symbol
+    verify(Token, identsym);
 
     // move to name
     get_next_token();
@@ -728,11 +685,8 @@ void factor() {
     // evaluate the expression
     expression();
 
-    // coming out of expression, we are at ")"
-    if(!equal(Token, rparentsym)) {
-      // missing right parenthesis
-      error(12);
-    }
+    // coming out of expression, we should be at ")"
+    verify(Token, rparentsym);
 
   }
   else {
@@ -785,6 +739,19 @@ void print_symbol(int index) {
 // a helper to simplify conditionals
 bool equal(char* token, int numerical_mapping) {
   return strcmp(token, IRMapping[numerical_mapping]) == 0;
+}
+
+// verify that a token is what it is supposed to be
+void verify(char* token, int numerical_mapping) {
+  
+  char expected_symbol[64];
+  strcpy(expected_symbol, IRMapping[numerical_mapping]);
+
+  // check for a period at the end
+  if(!equal(token, numerical_mapping)) {
+    printf("Error, expected %s.\n", expected_symbol);
+    exit(0);
+  }
 }
 
 // create sample assembly code output file for testing purposes

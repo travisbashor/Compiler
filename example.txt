@@ -1,0 +1,6 @@
+var a;
+begin
+a := 4 + 2;
+write a;
+end
+.
