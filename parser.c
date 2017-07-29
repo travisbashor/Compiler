@@ -1,6 +1,5 @@
 // Travis Bashor
-// 7-7-17
-// Systems Software, Homework 3: Parser with if-then-else and procedures
+// Systems Software, Compiler
 
 // includes
 #include <string.h>
@@ -11,14 +10,16 @@
 #include "internals.h"
 
 // globals
-char Token[64];
 char Lexeme_List[MAX_CODE_LENGTH][64];
+char Token[64];
 char* id[12];
+
 int Symbol_Table_Index = 1;
 int Lexeme_List_Index = 0;
-int Code_Index = 0;
 int Locals_Index = 4;
+int Code_Index = 0;
 int Lex_Level = 0;
+
 Symbol Symbol_Table[MAX_SYMBOL_TABLE_SIZE];
 Instruction code[MAX_CODE_LENGTH];
 
@@ -44,7 +45,7 @@ void program() {
   // parse the block of code
   block();
 
-  // check for a period at the end
+  // coming out of the block, check for a period
   verify(Token, periodsym);
 
   // after the period, halt the program
@@ -57,7 +58,7 @@ void block() {
   // increment the lexicographical level
   Lex_Level++;
   
-  // jump to main(), to be modified after procedures are declared
+  // pre-load a jump, to skip the proc until it is called
   int jump_index = Code_Index;
   emit(JMP, 0, 0);
 
@@ -77,7 +78,7 @@ void block() {
     procedure_declaration();
   }
 
-  // make sure the code index in the first jump points to the outer function
+  // modify the jump to skip the procedure block on the first pass through the assembly
   code[jump_index].modifier = Code_Index;
 
   // create 4 spaces at the start for control variables, plus locals
@@ -118,11 +119,13 @@ void constant_declaration() {
     // move to equals
     get_next_token();
 
+    // verify that Token is an equals symbol
     verify(Token, eqlsym);
     
     // move to number
     get_next_token();
 
+    // verify that Token is a number symbol
     verify(Token, numbersym);
 
     // move to the actual value
@@ -130,7 +133,7 @@ void constant_declaration() {
     
     int value = atoi(Token);
 
-    // keep the constant in the symbol table, separate from the assembly
+    // keep any constants in the symbol table only, separate from the assembly
     enter(1, name, value, 0, 0);
 
     // move to comma
@@ -138,12 +141,14 @@ void constant_declaration() {
 
   } while (equal(Token, commasym));
 
+  // make sure Token is a semi-colon
   verify(Token, semicolonsym);
 
+  // move to the next line
   get_next_token();
 }
 
-// declare a variable
+// declare a list of variables
 int variable_declaration() {
 
   // count the number of variables declared and return it to block()
@@ -157,7 +162,7 @@ int variable_declaration() {
     // move to ident
     get_next_token();
 
-    // check for ident
+    // make sure Token is an ident symbol
     verify(Token, identsym);
 
     // move to name
@@ -165,7 +170,7 @@ int variable_declaration() {
     
     char name[MAX_IDENTIFIER_LENGTH];
     strcpy(name, Token);
-
+    
     int symbol_index = find(name);
     if(symbol_index != 0) {
       // variable already declared
