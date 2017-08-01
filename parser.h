@@ -10,6 +10,9 @@ typedef enum {
   SIO = 9
 } operation;
 
+// print a message that the program is syntactically correct
+void success();
+
 // enter a symbol into the symbol table
 void enter(int, char*, int, int, int);
 
