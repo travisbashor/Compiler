@@ -8,8 +8,6 @@ int Show_Lexemes = 0;
 int Show_Assembly = 0;
 int Show_Execution = 0;
 
-// every time you call block(), create 4 slots for control variables
-
 int main(int argc, char** argv) {
   
   // handle flags
@@ -36,15 +34,8 @@ void compile(char* program) {
 
   run_parser(parser_output);
 
-  // program is syntactically correct
-  success();
-  
   run_virtual_machine(vm_output);
 
-}
-
-void success() {
-  printf("\nProgram is syntactically correct.\n\n");
 }
 
 void assign_flags(int num_flags, char** flags) {

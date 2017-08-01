@@ -34,6 +34,13 @@ void run_parser(char* output_file) {
   if(Show_Assembly == 1) {
     print_assembly(output_file);
   }
+
+  success();
+}
+
+// print a success message
+void success() {
+  printf("Program is syntactically correct.\n");
 }
 
 // <program> ::= <block>.
